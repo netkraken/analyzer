@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+"""
+Usage:
+    rawdata2hive TIMESTAMP
+"""
+from __future__ import (print_function, division)
+
+import glob
+import json
+import os
+
+from docopt import docopt
+
+
+def calc_index(name):
+    sum = 0
+    for c in name:
+        sum = 7 * sum + ord(c)
+    return (sum % 1000) / 1000
+
+
+def calc_node(where, name):
+    return {
+        "name": name,
+        "id": name,
+        "index": calc_index(name),
+        "group": 0
+    }
+
+arguments = docopt(__doc__)
+
+timestamp = arguments["TIMESTAMP"]
+
+links = []
+nodes = {}
+
+for filename in glob.glob(os.path.join("rawdata", "*", "final", timestamp)):
+    with open(filename) as f:
+        data = json.load(f)
+        for connection, count in data.items():
+            source, target, protocol = connection.split()
+            link = {
+                "id": connection,
+                "protocol": protocol,
+                "source": source,
+                "target": target,
+            }
+            links.append(link)
+
+            if source not in nodes:
+                nodes[source] = calc_node("source", source)
+            if target not in nodes:
+                nodes[target] = calc_node("target", target)
+
+data = {"links": links, "nodes": nodes}
+print(json.dumps(data, indent=4))

@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+from __future__ import print_function
+
+import glob
+import json
+import os
+
+print("digraph G {")
+for filename in glob.glob(os.path.join("rawdata", "*", "final", "*T??")):
+    with open(filename) as f:
+        data = json.load(f)
+        for connection, count in data.items():
+            source, target, protocol = connection.split()
+            print('    "%s" -> "%s" [label="%s",penwidth=%.2f];' % (source, target, protocol, count))
+print("}")

@@ -1,0 +1,12 @@
+#!/usr/bin/env python
+from __future__ import print_function
+
+import glob
+import os
+
+timestamps = set()
+for timestamp in glob.glob(os.path.join("rawdata", "*", "final", "*T??")):
+    timestamps.add(os.path.basename(timestamp))
+
+for timestamp in sorted(timestamps):
+    print(timestamp)

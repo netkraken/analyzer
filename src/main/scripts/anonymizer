@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+from __future__ import print_function
+
+import json
+import sys
+import hashlib
+
+
+def anonymize_str(text):
+    md5 = hashlib.md5(text).hexdigest()
+    if text.startswith("dev"):
+        return "devel-" + md5
+    if text.startswith("tuv"):
+        return "testing-" + md5
+    return "frontend-" + md5
+
+
+def anonymize(obj):
+    for key in ["source", "target", "id", "name"]:
+        if key in obj:
+            obj[key] = anonymize_str(obj[key])
+    return obj
+
+
+if __name__ == "__main__":
+    data = json.load(sys.stdin)
+
+    for link in data["links"]:
+        anonymize(link)
+
+    new_nodes = {}
+    for key, value in data["nodes"].items():
+        new_key = anonymize_str(key)
+        new_nodes[new_key] = anonymize(value)
+    data["nodes"] = new_nodes
+
+    print(json.dumps(data, indent=4))
