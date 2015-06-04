@@ -6,17 +6,24 @@ import sys
 import hashlib
 
 
-def anonymize_str(text):
-    md5 = hashlib.md5(text).hexdigest()
-    if text.startswith("dev"):
-        return "devel-" + md5
-    if text.startswith("tuv"):
-        return "testing-" + md5
-    return "frontend-" + md5
+def anonymize_str(texts):
+    result = []
+    for text in texts.split():
+        prefix = text[:6]
+        prefix_md5 = hashlib.md5(prefix).hexdigest()[:4]
+        md5 = hashlib.md5(text).hexdigest()[:10]
+        if text.startswith("dev"):
+            result.append("-".join(["devel", prefix_md5, md5]))
+            continue
+        if text.startswith("tuv"):
+            result.append("-".join(["testing", prefix_md5, md5]))
+            continue
+        result.append("-".join([prefix_md5, md5]))
+    return " ".join(result)
 
 
 def anonymize(obj):
-    for key in ["source", "target", "id", "name"]:
+    for key in ["source", "target", "name", "id"]:
         if key in obj:
             obj[key] = anonymize_str(obj[key])
     return obj
