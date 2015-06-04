@@ -40,7 +40,7 @@ for filename in glob.glob(os.path.join("rawdata", "*", "final", timestamp)):
         for connection, count in data.items():
             source, target, protocol = connection.split()
             link = {
-                "id": connection,
+                "id": "%s %s" % (source, target),
                 "protocol": protocol,
                 "source": source,
                 "target": target,
