@@ -52,5 +52,16 @@ for filename in glob.glob(os.path.join("rawdata", "*", "final", timestamp)):
             if target not in nodes:
                 nodes[target] = calc_node("target", target)
 
-data = {"links": links, "nodes": nodes}
+nodes2id = {}
+for nr, node in enumerate(sorted(nodes.keys())):
+    nodes2id[node] = nr
+
+for link in links:
+    link["sourceId"] = nodes2id[link["source"]]
+    link["targetId"] = nodes2id[link["target"]]
+
+nodes_ordered = sorted(nodes2id, key=nodes2id.get)
+
+
+data = {"links": links, "nodes": nodes, "nodes_ordered": nodes_ordered}
 print(json.dumps(data, indent=4))

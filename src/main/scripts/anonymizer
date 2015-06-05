@@ -35,6 +35,11 @@ if __name__ == "__main__":
     for link in data["links"]:
         anonymize(link)
 
+    new_ordered_nodes = []
+    for node in data["nodes_ordered"]:
+        new_ordered_nodes.append(anonymize_str(node))
+    data["nodes_ordered"] = new_ordered_nodes
+
     new_nodes = {}
     for key, value in data["nodes"].items():
         new_key = anonymize_str(key)
