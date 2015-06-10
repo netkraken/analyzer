@@ -3,7 +3,7 @@
 Usage:
     rawdata2hive TIMESTAMP
 """
-from __future__ import (print_function, division)
+from __future__ import print_function
 
 import glob
 import json
@@ -11,21 +11,8 @@ import os
 
 from docopt import docopt
 
+from netkraken_analyzer import add_node, dumps
 
-def calc_index(name):
-    sum = 0
-    for c in name:
-        sum = 7 * sum + ord(c)
-    return (sum % 1000) / 1000
-
-
-def calc_node(where, name):
-    return {
-        "name": name,
-        "id": name,
-        "index": calc_index(name),
-        "group": 0
-    }
 
 arguments = docopt(__doc__)
 
@@ -33,7 +20,6 @@ timestamp = arguments["TIMESTAMP"]
 
 links = []
 nodes = {}
-
 for filename in glob.glob(os.path.join("rawdata", "*", "final", timestamp)):
     with open(filename) as f:
         data = json.load(f)
@@ -44,24 +30,11 @@ for filename in glob.glob(os.path.join("rawdata", "*", "final", timestamp)):
                 "protocol": protocol,
                 "source": source,
                 "target": target,
+                "count": count,
             }
             links.append(link)
 
-            if source not in nodes:
-                nodes[source] = calc_node("source", source)
-            if target not in nodes:
-                nodes[target] = calc_node("target", target)
+            add_node(source, nodes)
+            add_node(target, nodes)
 
-nodes2id = {}
-for nr, node in enumerate(sorted(nodes.keys())):
-    nodes2id[node] = nr
-
-for link in links:
-    link["sourceId"] = nodes2id[link["source"]]
-    link["targetId"] = nodes2id[link["target"]]
-
-nodes_ordered = sorted(nodes2id, key=nodes2id.get)
-
-
-data = {"links": links, "nodes": nodes, "nodes_ordered": nodes_ordered}
-print(json.dumps(data, indent=4))
+print(dumps(links, nodes))
