@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+from __future__ import print_function
+
+import fileinput
+import json
+import re
+
+import numpy as np
+import pandas as pd
+
+from netkraken_analyzer import add_node, dumps
+
+
+def calc_groupname(name):
+    return re.sub(r"-[^-]*$", "", name)
+
+
+if __name__ == "__main__":
+    raw = "".join(line for line in fileinput.input())
+    data = json.loads(raw)
+    links = []
+    nodes = {}
+
+    sources = []
+    targets = []
+    protocols = []
+    counts = []
+    for link in data["links"]:
+        sources.append(link["source"])
+        targets.append(link["target"])
+        protocols.append(link["protocol"])
+        counts.append(link["count"])
+    d = pd.DataFrame({"source": sources,
+                      "target": targets,
+                      "protocol": protocols,
+                      "count": counts},
+                     columns=["source", "target", "protocol", "count"])
+    d["source"] = d["source"].apply(calc_groupname)
+    d["target"] = d["target"].apply(calc_groupname)
+
+    pt = pd.pivot_table(d, values="count", columns=["source", "target", "protocol"], aggfunc=np.sum)
+
+    links = []
+    nodes = {}
+    for index, count in pt.iteritems():
+        links.append({
+            "source": index[0],
+            "target": index[1],
+            "protocol": index[2],
+            "count": count,
+            "id": "%s %s" % (index[0], index[1]),
+        })
+        add_node(index[0], nodes)
+        add_node(index[1], nodes)
+
+    print(dumps(links, nodes))
