@@ -7,5 +7,5 @@ analyze network data
 * visualizes this data in different ways
 
 ## References
-Some Visualizations are inspired by [hiveplot.net](http://www.hiveplot.net/),
-based on Mike Bostock's [d3 example](http://bost.ocks.org/mike/hive/).
+Some visualizations are inspired by [hiveplot.net](http://www.hiveplot.net/),
+and based on Mike Bostock's [d3 example](http://bost.ocks.org/mike/hive/).
