@@ -1,4 +1,10 @@
+![a kraken](https://raw.githubusercontent.com/netkraken/minion/master/res/octopus.png)
+
 # analyzer
+
+[![Build Status](https://api.travis-ci.org/netkraken/analyzer.svg?branch=master)](https://travis-ci.org/netkraken/analyzer)
+[![Coverage Status](https://coveralls.io/repos/netkraken/analyzer/badge.svg)](https://coveralls.io/r/netkraken/analyzer)
+
 analyze network data
 
 ## tl;dr
