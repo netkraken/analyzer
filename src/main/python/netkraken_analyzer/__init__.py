@@ -1,6 +1,7 @@
 from __future__ import division
 
 import json
+import glob
 
 
 def calc_index(name):
@@ -27,3 +28,25 @@ def add_node(nodename, nodes):
 def dumps(links, nodes):
     data = {"links": links, "nodes": nodes}
     return json.dumps(data, indent=4)
+
+
+def calc_nodes_and_links(path):
+    links = []
+    nodes = {}
+    for filename in glob.glob(path):
+        with open(filename) as f:
+            data = json.load(f)
+            for connection, count in data.items():
+                source, target, protocol = connection.split()
+                link = {
+                    "id": "%s %s" % (source, target),
+                    "protocol": protocol,
+                    "source": source,
+                    "target": target,
+                    "count": count,
+                }
+                links.append(link)
+
+                add_node(source, nodes)
+                add_node(target, nodes)
+    return {"nodes": nodes, "links": links}
