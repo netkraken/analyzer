@@ -32,6 +32,14 @@ def anonymize(obj):
 if __name__ == "__main__":
     data = json.load(sys.stdin)
 
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "list-mapping":
+            for key in sorted(data["nodes"]):
+                print("%-20s  %s" % (key, anonymize_str(key)))
+            sys.exit()
+        print("unknown command %s" % sys.argv[1])
+        sys.exit(1)
+
     for link in data["links"]:
         anonymize(link)
 
