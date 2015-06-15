@@ -1,9 +1,7 @@
 from __future__ import print_function
 
-from datetime import datetime
-
 import unittest
-from mock import patch
+from mock import patch, mock_open
 
 from testhelper import myAssertDictEqual
 
@@ -19,9 +17,30 @@ class AnalyzerTest(unittest.TestCase):
         myAssertDictEqual({"name": "foo", "id": "foo", "group": 0, "index": 0.886}, netkraken_analyzer.calc_node("foo"))
 
     def test_add_node(self):
-        nodes = {} 
+        nodes = {}
         netkraken_analyzer.add_node("bar", nodes)
-        self.assertIn("bar", nodes)
+        found = nodes.get("bar")
+        self.assertNotEqual(found, None)
+
+    def test_dumps(self):
+        self.assertEqual("""{\n    "nodes": [\n        "a"\n    ], \n    "links": {\n        "foo": "bar"\n    }\n}""",
+                         netkraken_analyzer.dumps({"foo": "bar"}, ["a"]))
+
+    @patch("glob.glob")
+    def test_calc_nodes_and_links(self, globglob):
+        globglob.return_value = ("foo")
+
+        dummy_db_as_string = """{
+            "a b somehow": 42
+        }"""
+        with patch("netkraken_analyzer.open", mock_open(read_data=dummy_db_as_string), create=True) as m:
+            result = netkraken_analyzer.calc_nodes_and_links(".../invalid_path")
+            self.assertTrue(len(m.mock_calls) > 0)
+        myAssertDictEqual({
+            "a": {"index": 0.097, "name": "a", "id": "a", "group": 0},
+            "b": {"index": 0.098, "name": "b", "id": "b", "group": 0}}, result["nodes"])
+        myAssertDictEqual({'count': 42, 'source': u'a', 'protocol': u'somehow', 'id': u'a b', 'target': u'b'},
+                          result["links"][0])
 
     # @patch("netkraken.get_current_datetime")
     # def test_get_current_timestrings(self, now_mock):

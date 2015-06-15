@@ -4,5 +4,8 @@ def myAssertDictEqual(a, b):
 
 def dictAInB(a, b):
     for akey, avalue in a.items():
-        if avalue != b[akey]:
-            raise Exception("%s[%s] != [%s]" % (akey, avalue, b.get(akey)))
+        bvalue = b.get(akey)
+        if akey in b:
+            if avalue == bvalue:
+                continue
+        raise Exception("%s[%s] != [%s]" % (akey, avalue, bvalue))
