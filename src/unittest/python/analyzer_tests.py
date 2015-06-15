@@ -23,7 +23,7 @@ class AnalyzerTest(unittest.TestCase):
         self.assertNotEqual(found, None)
 
     def test_dumps(self):
-        self.assertEqual("""{\n    "nodes": [\n        "a"\n    ], \n    "links": {\n        "foo": "bar"\n    }\n}""",
+        self.assertEqual("""{\n    "links": {\n        "foo": "bar"\n    }, \n    "nodes": [\n        "a"\n    ]\n}""",
                          netkraken_analyzer.dumps({"foo": "bar"}, ["a"]))
 
     @patch("glob.glob")

@@ -27,7 +27,7 @@ def add_node(nodename, nodes):
 
 def dumps(links, nodes):
     data = {"links": links, "nodes": nodes}
-    return json.dumps(data, indent=4)
+    return json.dumps(data, indent=4, sort_keys=True)
 
 
 def calc_nodes_and_links(path):
