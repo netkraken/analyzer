@@ -9,8 +9,8 @@ analyze network data
 
 ## tl;dr
 * convert network connections [CountDBs](https://github.com/netkraken/countdb) to
-  data format containing nodes and links, json format.
-* visualizes this data in different ways
+  json format (containing nodes and links).
+* [visualizes](http://netkraken.github.io/) this data in different ways
 
 ## References
 Some visualizations are inspired by [hiveplot.net](http://www.hiveplot.net/),
